@@ -1,0 +1,44 @@
+[gd_scene load_steps=6 format=3 uid="uid://p41d3nky4lxr"]
+
+[ext_resource type="Texture2D" uid="uid://dq7rvqxwqxg4e" path="res://mario1_1sprites/lario.png" id="1_2soiu"]
+[ext_resource type="Script" path="res://player.gd" id="1_e0vja"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_pmo5w"]
+size = Vector2(14, 31.5)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_272ei"]
+size = Vector2(20, 2)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_lpda5"]
+size = Vector2(16, 2)
+
+[node name="Player" type="CharacterBody2D"]
+script = ExtResource("1_e0vja")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(1, 0)
+texture = ExtResource("1_2soiu")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -0.75)
+shape = SubResource("RectangleShape2D_pmo5w")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+limit_left = 0
+limit_bottom = 170
+position_smoothing_enabled = true
+
+[node name="CeilingDetector" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CeilingDetector"]
+position = Vector2(0, -16)
+shape = SubResource("RectangleShape2D_272ei")
+
+[node name="StompDetector" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StompDetector"]
+position = Vector2(0, 15)
+shape = SubResource("RectangleShape2D_lpda5")
+
+[connection signal="body_entered" from="CeilingDetector" to="." method="_on_ceiling_detector_body_entered"]
+[connection signal="area_entered" from="StompDetector" to="." method="_on_stomp_detector_area_entered"]
