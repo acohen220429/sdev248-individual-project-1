@@ -3,6 +3,7 @@ const MUSHROOM_SCENE = preload("res://mushroom.tscn")
 const FIREBALL_SCENE = preload("res://fireball.tscn")
 var is_big: bool = false
 var is_fire: bool = false
+var knockback_timer: float = 0.0
 
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
 @onready var ceiling_detector_shape: CollisionShape2D = $CeilingDetector/CollisionShape2D
@@ -53,13 +54,18 @@ func become_fire_player() -> void:
 
 
 func _physics_process(delta: float) -> void:
+	if knockback_timer > 0.0:
+		knockback_timer -= delta
+	
 	if not is_on_floor():
 		velocity += get_gravity() * delta
 
-	if Input.is_action_just_pressed("jump") and is_on_floor():
+	if Input.is_action_just_pressed("jump") and is_on_floor() and knockback_timer <= 0.0:
 		velocity.y = JUMP_VELOCITY
-
-	var direction := Input.get_axis("move_left", "move_right")
+	
+	var direction: float = 0.0
+	if knockback_timer <= 0.0:
+		direction = Input.get_axis("move_left", "move_right")
 	if direction:
 		velocity.x = direction * SPEED
 		if direction > 0:
@@ -79,9 +85,10 @@ func _physics_process(delta: float) -> void:
 		var collider = collision.get_collider()
 		
 		if collider.name.begins_with("Enemy") and "is_squished" in collider and not collider.is_squished:
-			if collision.get_position().y > global_position.y + 4:
+			var normal = collision.get_normal()
+			if normal.dot(Vector2.UP):
 				continue
-			handle_player_damage()
+			handle_player_damage(collision)
 
 
 func _on_ceiling_detector_body_entered(body: Node2D) -> void:
@@ -127,14 +134,22 @@ func _on_stomp_detector_area_entered(area: Area2D) -> void:
 			enemy.squish()
 			velocity.y = JUMP_VELOCITY * 0.6
 
-func handle_player_damage() -> void:
+func handle_player_damage(collision: KinematicCollision2D) -> void:
+	var push_direction = collision.get_normal().x
+	
+	if push_direction == 0:
+		push_direction = -1.0 if sprite.scale.x > 0 else 1.0
 	if is_fire:
 		is_fire = false
 		become_big()
-		velocity.y = -150
+		knockback_timer = 0.2
+		velocity.x = push_direction * 200.0
+		velocity.y = -200.0
 	elif is_big:
 		become_small()
-		velocity.y = -150.0
+		knockback_timer = 0.2
+		velocity.x = push_direction * 200.0
+		velocity.y = -200.0
 	else:
 		GameManager.lose_life()
 
