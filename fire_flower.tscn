@@ -1,0 +1,17 @@
+[gd_scene load_steps=4 format=3 uid="uid://bgwtwmy6d5frd"]
+
+[ext_resource type="Script" path="res://fire_flower.gd" id="1_l74t1"]
+[ext_resource type="Texture2D" uid="uid://bfca0t3kn42df" path="res://mario1_1sprites/fire flower.png" id="1_wo87s"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_qwc5q"]
+size = Vector2(14, 15)
+
+[node name="FireFlower" type="Area2D"]
+script = ExtResource("1_l74t1")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_wo87s")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 0.5)
+shape = SubResource("RectangleShape2D_qwc5q")

@@ -1,0 +1,33 @@
+[gd_scene load_steps=5 format=3 uid="uid://ccsd8rr32o5n8"]
+
+[ext_resource type="Texture2D" uid="uid://cu3u5xecb6n3s" path="res://mario1_1sprites/enemy.png" id="1_2a6g1"]
+[ext_resource type="Script" path="res://enemy.gd" id="1_bga0t"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_fc5sy"]
+size = Vector2(14, 13)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_sceph"]
+size = Vector2(14, 1)
+
+[node name="Enemy" type="CharacterBody2D"]
+script = ExtResource("1_bga0t")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_2a6g1")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -0.5)
+shape = SubResource("RectangleShape2D_fc5sy")
+
+[node name="HeadDetector" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HeadDetector"]
+position = Vector2(0, -7.5)
+shape = SubResource("RectangleShape2D_sceph")
+
+[node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="."]
+position = Vector2(1.19209e-07, -0.499999)
+scale = Vector2(0.7, 0.65)
+
+[connection signal="body_entered" from="HeadDetector" to="." method="_on_head_detector_body_entered"]
+[connection signal="screen_entered" from="VisibleOnScreenNotifier2D" to="." method="_on_visible_on_screen_notifier_2d_screen_entered"]
